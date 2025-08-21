@@ -3,8 +3,8 @@ _update_autocomplete() {
     local cur prev words cword
     _get_comp_words_by_ref -n : cur prev words cword
 
-    CONFIG="$HOME/.npm-template.json"
-    PROJECTS="$HOME/.npm-projects.json"
+    CONFIG="./.npm-template.json"
+    PROJECTS="./.npm-projects.json"
 
     # List subcommand
     local cmds="list-templates list-projects add-template add-project remove-project set-version run run-project run-folder"

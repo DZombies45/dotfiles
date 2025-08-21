@@ -21,6 +21,7 @@ ranger_cd() {
     rm -f "$tempfile"
 }
 alias r='ranger_cd'
+source ~/dotfiles/mc/update
 export PATH="$HOME:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 source ~/dotfiles/mc/.bash_completion
