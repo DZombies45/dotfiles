@@ -1,0 +1,28 @@
+{
+  "mc-ui": {
+    "beta": [
+      "@minecraft/server@2.2.0-beta.1.21.100-stable",
+      "@minecraft/server-ui@2.1.0-beta.1.21.100-stable"
+    ],
+    "stable": [
+      "@minecraft/server@2.1.0",
+      "@minecraft/server-ui@2.0.0"
+    ]
+  },
+  "mc": {
+    "beta": [
+      "@minecraft/server@2.2.0-beta.1.21.100-stable"
+    ],
+    "stable": [
+      "@minecraft/server@2.1.0"
+    ]
+  },
+  "ui": {
+    "beta": [
+      "@minecraft/server-ui@2.1.0-beta.1.21.100-stable"
+    ],
+    "stable": [
+      "@minecraft/server-ui@2.0.0"
+    ]
+  }
+}

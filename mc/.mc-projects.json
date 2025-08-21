@@ -1,0 +1,37 @@
+{
+  "shome": {
+    "path": "/data/data/com.termux/files/home/mc-shome",
+    "template": "mc-ui",
+    "version": "beta"
+  },
+  "tpr": {
+    "path": "/data/data/com.termux/files/home/mc-tpr",
+    "template": "mc-ui",
+    "version": "beta"
+  },
+  "irestock": {
+    "path": "/data/data/com.termux/files/home/mc-irestock",
+    "template": "mc-ui",
+    "version": "beta"
+  },
+  "test-beta": {
+    "path": "/data/data/com.termux/files/home/minecraft-beta",
+    "template": "mc-ui",
+    "version": "beta"
+  },
+  "test-stable": {
+    "path": "/data/data/com.termux/files/home/minecraft-stable",
+    "template": "mc-ui",
+    "version": "stable"
+  },
+  "dctune": {
+    "path": "/data/data/com.termux/files/home/mc-daycycletuner",
+    "template": "mc-ui",
+    "version": "stable"
+  },
+  "sshop": {
+    "path": "/data/data/com.termux/files/home/mc-sshop",
+    "template": "mc-ui",
+    "version": "beta"
+  }
+}

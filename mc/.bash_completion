@@ -1,0 +1,99 @@
+# Autocomplete untuk script update
+_update_autocomplete() {
+    local cur prev words cword
+    _get_comp_words_by_ref -n : cur prev words cword
+
+    CONFIG="$HOME/.npm-template.json"
+    PROJECTS="$HOME/.npm-projects.json"
+
+    # List subcommand
+    local cmds="list-templates list-projects add-template add-project remove-project set-version run run-project run-folder"
+
+    # Argumen pertama → pilih subcommand
+    if [[ $cword -eq 1 ]]; then
+        COMPREPLY=( $(compgen -W "$cmds" -- "$cur") )
+        return 0
+    fi
+
+    case "${words[1]}" in
+        list-templates|list-projects)
+            # Gak ada argumen tambahan
+            return 0
+            ;;
+        add-template)
+            if [[ $cword -eq 2 ]]; then
+                # Nama template baru → bebas
+                return 0
+            elif [[ $cword -eq 3 ]]; then
+                # Versi → bebas
+                return 0
+            else
+                # Package → autocomplete dari npm? (skip dulu)
+                return 0
+            fi
+            ;;
+        add-project)
+            case $cword in
+                2) # nama project baru
+                    return 0
+                    ;;
+                3) # path → folder
+                    _filedir -d
+                    return 0
+                    ;;
+                4) # template → ambil dari CONFIG
+                    if [[ -f "$CONFIG" ]]; then
+                        local templates=$(jq -r 'keys[]' "$CONFIG")
+                        COMPREPLY=( $(compgen -W "$templates" -- "$cur") )
+                    fi
+                    return 0
+                    ;;
+                5) # versi dari template
+                    if [[ -f "$CONFIG" ]]; then
+                        local tmpl="${words[4]}"
+                        local versions=$(jq -r --arg t "$tmpl" '.[$t] | keys[]?' "$CONFIG" 2>/dev/null)
+                        COMPREPLY=( $(compgen -W "$versions" -- "$cur") )
+                    fi
+                    return 0
+                    ;;
+            esac
+            ;;
+        remove-project|run-project|set-version)
+            if [[ -f "$PROJECTS" ]]; then
+                local projects=$(jq -r 'keys[]' "$PROJECTS")
+                COMPREPLY=( $(compgen -W "$projects" -- "$cur") )
+            fi
+            return 0
+            ;;
+        run)
+            # versi filter → ambil semua versi unik
+            if [[ -f "$PROJECTS" ]]; then
+                local versions=$(jq -r '.[].version' "$PROJECTS" | sort -u)
+                COMPREPLY=( $(compgen -W "$versions" -- "$cur") )
+            fi
+            return 0
+            ;;
+        run-folder)
+            case $cword in
+                2) _filedir -d ;; # folder
+                3) # template
+                    if [[ -f "$CONFIG" ]]; then
+                        local templates=$(jq -r 'keys[]' "$CONFIG")
+                        COMPREPLY=( $(compgen -W "$templates" -- "$cur") )
+                    fi
+                    ;;
+                4) # versi
+                    if [[ -f "$CONFIG" ]]; then
+                        local tmpl="${words[3]}"
+                        local versions=$(jq -r --arg t "$tmpl" '.[$t] | keys[]?' "$CONFIG" 2>/dev/null)
+                        COMPREPLY=( $(compgen -W "$versions" -- "$cur") )
+                    fi
+                    ;;
+            esac
+            return 0
+            ;;
+    esac
+}
+
+# Hubungkan ke perintah update
+complete -F _update_autocomplete update

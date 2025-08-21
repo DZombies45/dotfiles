@@ -1,0 +1,137 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+CONFIG="$HOME/.mc-template.json"
+PROJECTS="$HOME/.mc-projects.json"
+
+[ ! -f "$CONFIG" ] && echo '{}' > "$CONFIG"
+[ ! -f "$PROJECTS" ] && echo '{}' > "$PROJECTS"
+
+cmd="$1"
+
+case "$cmd" in
+  list-templates)
+		# jq '.' "$CONFIG"
+jq -r '
+to_entries[] as $main |
+(
+  [$main.key + ":"]
+  + (
+      $main.value
+      | to_entries
+      | map(
+          ["  [\(.key)]:"] +
+          (
+            (if (.value|type)=="array" then .value else [ .value ] end)
+            | map("     • \(.)")
+          )
+        )
+      | add
+    )
+)
+| join("\n")
+' "$CONFIG"
+    ;;
+  list-projects)
+    jq -r 'to_entries[] | "\(.key):\n • \(.value.template) [\(.value.version)] -> \(.value.path)"' "$PROJECTS"
+    ;;
+  add-template)
+    name="$2"; version="$3"; shift 3
+    pkgs=("$@")
+    if [ ${#pkgs[@]} -eq 0 ]; then
+      echo "Masukkan daftar package!"
+      exit 1
+    fi
+    new_json=$(jq --arg n "$name" --arg v "$version" --argjson pkgs "$(printf '%s\n' "${pkgs[@]}" | jq -R . | jq -s .)" \
+      '.[$n][$v] = $pkgs' "$CONFIG")
+    echo "$new_json" > "$CONFIG"
+    echo "✅ Template '$name' versi '$version' ditambahkan."
+    ;;
+  add-project)
+    proj="$2"; path="$3"; template="$4"; version="$5"
+    if [ -z "$proj" ] || [ -z "$path" ] || [ -z "$template" ] || [ -z "$version" ]; then
+      echo "Usage: update add-project <nama> <path> <template> <version>"
+      exit 1
+    fi
+    new_json=$(jq --arg p "$proj" --arg path "$path" --arg t "$template" --arg v "$version" \
+      '.[$p] = { path: $path, template: $t, version: $v }' "$PROJECTS")
+    echo "$new_json" > "$PROJECTS"
+    echo "✅ Project '$proj' ditambahkan."
+    ;;
+  remove-project)
+    proj="$2"
+    new_json=$(jq "del(.\"$proj\")" "$PROJECTS")
+    echo "$new_json" > "$PROJECTS"
+    echo "✅ Project '$proj' dihapus."
+    ;;
+  set-version)
+    proj="$2"; version="$3"
+    if ! jq -e ".\"$proj\"" "$PROJECTS" > /dev/null; then
+      echo "❌ Project '$proj' tidak ditemukan."
+      exit 1
+    fi
+    new_json=$(jq --arg p "$proj" --arg v "$version" '.[$p].version = $v' "$PROJECTS")
+    echo "$new_json" > "$PROJECTS"
+    echo "✅ Project $proj sekarang pakai versi $version."
+    ;;
+  run)
+    filter="$2" # optional: beta/stable/...
+    for proj in $(jq -r 'keys[]' "$PROJECTS"); do
+      path=$(jq -r ".\"$proj\".path" "$PROJECTS")
+      tmpl=$(jq -r ".\"$proj\".template" "$PROJECTS")
+      ver=$(jq -r ".\"$proj\".version" "$PROJECTS")
+      if [ -n "$filter" ] && [ "$ver" != "$filter" ]; then
+        continue
+      fi
+      pkgs=$(jq -r ".\"$tmpl\".\"$ver\"[]" "$CONFIG")
+      if [ -d "$path" ] && [ -n "$pkgs" ]; then
+        echo "📦 $proj ($tmpl $ver)"
+        cd "$path" && npm install $pkgs
+      else
+        echo "⚠️  $proj dilewati (folder/template tidak valid)"
+      fi
+    done
+    ;;
+  run-project)
+    proj="$2"
+    if ! jq -e ".\"$proj\"" "$PROJECTS" > /dev/null; then
+      echo "❌ Project '$proj' tidak ditemukan."
+      exit 1
+    fi
+    path=$(jq -r ".\"$proj\".path" "$PROJECTS")
+    tmpl=$(jq -r ".\"$proj\".template" "$PROJECTS")
+    ver=$(jq -r ".\"$proj\".version" "$PROJECTS")
+    pkgs=$(jq -r ".\"$tmpl\".\"$ver\"[]" "$CONFIG")
+    if [ -d "$path" ] && [ -n "$pkgs" ]; then
+      echo "📦 $proj ($tmpl $ver)"
+      cd "$path" && npm install $pkgs
+    else
+      echo "⚠️  $proj dilewati (folder/template tidak valid)"
+    fi
+    ;;
+  run-folder)
+    path="$2"; tmpl="$3"; ver="$4"
+    if [ -z "$path" ] || [ -z "$tmpl" ] || [ -z "$ver" ]; then
+      echo "Usage: update run-folder <path> <template> <versi>"
+      exit 1
+    fi
+    pkgs=$(jq -r ".\"$tmpl\".\"$ver\"[]" "$CONFIG")
+    if [ -d "$path" ] && [ -n "$pkgs" ]; then
+      echo "📦 Folder $path ($tmpl $ver)"
+      cd "$path" && npm install $pkgs
+    else
+      echo "⚠️  Folder/template tidak valid"
+    fi
+    ;;
+  *)
+    echo "Usage:"
+    echo "  update list-templates"
+    echo "  update list-projects"
+    echo "  update add-template <nama> <versi> <pkg...>"
+    echo "  update add-project <nama> <path> <template> <versi>"
+    echo "  update remove-project <nama>"
+    echo "  update set-version <project> <versi>"
+    echo "  update run [versi]" 
+    echo "  update run-project <project>"
+    echo "  update run-folder <path> <template> <versi>"
+    ;;
+esac
