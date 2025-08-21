@@ -4,7 +4,7 @@ alias copyDc="rm -r ~/storage/downloads/Termux/Discord_bot2/ | rsync -av --exclu
 alias T="cd ~/storage/downloads/Termux/test/"
 alias FM="manager"
 alias zipDc="~/compress.sh"
-alias ls="lsd -a"
+alias ls="lsd -aAF --group-dirs=first"
 alias vim="nvim"
 alias npr="npm run"
 alias web="cd ~/dzombies45.github.io/ && bundle exec jekyll s"
