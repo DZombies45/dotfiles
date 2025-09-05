@@ -1,5 +1,6 @@
 eval "$(starship init bash)"
 eval "$(zoxide init --cmd cd bash)"
+termux-api-start
 alias copyDc="rm -r ~/storage/downloads/Termux/Discord_bot2/ | rsync -av --exclude 'node_modules' ~/Discord_bot2/ ~/storage/downloads/Termux/Discord_bot2/"
 alias T="cd ~/storage/downloads/Termux/test/"
 alias FM="manager"
@@ -21,6 +22,8 @@ ranger_cd() {
     rm -f "$tempfile"
 }
 alias r='ranger_cd'
+alias cat='bat --paging=never --theme=tokyonight_night'
+alias upnpm="ncu --reject '/^@minecraft\//' -u && npm install"
 source ~/dotfiles/mc/update
 export PATH="$HOME:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
