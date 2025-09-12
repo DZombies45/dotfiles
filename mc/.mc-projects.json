@@ -33,5 +33,10 @@
     "path": "/data/data/com.termux/files/home/mc-sshop",
     "template": "mc-ui",
     "version": "beta"
+  },
+  "vein": {
+    "path": ".",
+    "template": "mc-ui",
+    "version": "beta"
   }
 }

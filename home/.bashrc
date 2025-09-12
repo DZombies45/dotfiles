@@ -15,6 +15,7 @@ alias mc="cd storage/shared/Android/data/com.mojang.minecraftpe/files/games/com.
 alias uang="node ~/manager_uang/uang.js"
 alias lh="python -m http.server 8000 | am start --user 0 -a android.intent.action.VIEW -d 'http://localhost:8000' | termux-notification -t 'Web Server Aktif' -c 'Buka http://localhost:8000'"
 alias backup_mc="bash ~/backup-mc.sh"
+alias cpd="rsync -av --progress --exclude node_modules "
 ranger_cd() {
     tempfile="$(mktemp -t ranger_cd.XXXXXX)"
     ranger --choosedir="$tempfile" "${@:-$PWD}"
