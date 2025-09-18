@@ -28,6 +28,7 @@ alias upnpm="ncu --reject '/^@minecraft\//' -u && npm install"
 source ~/dotfiles/mc/update
 export PATH="$HOME:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
+export NODE_PATH=$(npm root -g)
 source ~/dotfiles/mc/.bash_completion
 clear
 echo -e "$(cat ~/.ascii-logo.txt)"
