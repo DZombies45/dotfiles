@@ -35,8 +35,8 @@
     "version": "beta"
   },
   "vein": {
-    "path": ".",
-    "template": "mc-ui",
+    "path": "/data/data/com.termux/files/home/mc-vein/",
+    "template": "mcui",
     "version": "beta"
   }
 }

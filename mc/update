@@ -8,37 +8,65 @@ PROJECTS="$HOME/.mc-projects.json"
 
 cmd="$1"
 
+# ===============================
+# Helper: npm install dengan fallback
+# ===============================
+npm_install_safe() {
+  pkgs=("$@")
+  if ! npm install "${pkgs[@]}"; then
+  	 echo "⚠️  Masih gagal, coba dengan --force..."
+    if ! npm install --force "${pkgs[@]}"; then
+			echo "⚠️  Gagal install normal, coba dengan --legacy-peer-deps..."
+			if ! npm install --legacy-peer-deps "${pkgs[@]}"; then
+       echo "❌ Instalasi gagal total untuk paket: ${pkgs[*]}"
+        return 1
+      fi
+    fi
+  fi
+  return 0
+}
+
 case "$cmd" in
   list-templates)
-		# jq '.' "$CONFIG"
-jq -r '
-to_entries[] as $main |
-(
-  [$main.key + ":"]
-  + (
-      $main.value
-      | to_entries
-      | map(
-          ["  [\(.key)]:"] +
-          (
-            (if (.value|type)=="array" then .value else [ .value ] end)
-            | map("     • \(.)")
-          )
+    jq -r '
+    if length == 0 then
+      "❌ Tidak ada template tersimpan."
+    else
+      to_entries[] as $main |
+      (
+        "📦 \($main.key)" + "\n" +
+        (
+          $main.value
+          | to_entries
+          | map(
+              "  ⬢ \(.key):\n" +
+              (
+                (if (.value|type)=="array" then .value else [ .value ] end)
+                | map("     • \(.)")
+                | join("\n")
+              )
+            )
+          | join("\n")
         )
-      | add
-    )
-)
-| join("\n")
-' "$CONFIG"
+      )
+    end
+    ' "$CONFIG"
     ;;
   list-projects)
-    jq -r 'to_entries[] | "\(.key):\n • \(.value.template) [\(.value.version)] -> \(.value.path)"' "$PROJECTS"
+    jq -r '
+    if length == 0 then
+      "❌ Tidak ada project tersimpan."
+    else
+      to_entries[] |
+      "📂 \(.key)\n  📁 Path    : \(.value.path)\n  📦 Template: \(.value.template) [\(.value.version)]"
+    end
+    ' "$PROJECTS"
     ;;
   add-template)
     name="$2"; version="$3"; shift 3
     pkgs=("$@")
     if [ ${#pkgs[@]} -eq 0 ]; then
-      echo "Masukkan daftar package!"
+      echo "❌ Masukkan daftar package!"
       exit 1
     fi
     new_json=$(jq --arg n "$name" --arg v "$version" --argjson pkgs "$(printf '%s\n' "${pkgs[@]}" | jq -R . | jq -s .)" \
@@ -85,7 +113,7 @@ to_entries[] as $main |
       pkgs=$(jq -r ".\"$tmpl\".\"$ver\"[]" "$CONFIG")
       if [ -d "$path" ] && [ -n "$pkgs" ]; then
         echo "📦 $proj ($tmpl $ver)"
-        cd "$path" && npm install $pkgs
+        cd "$path" && npm_install_safe $pkgs
       else
         echo "⚠️  $proj dilewati (folder/template tidak valid)"
       fi
@@ -103,7 +131,7 @@ to_entries[] as $main |
     pkgs=$(jq -r ".\"$tmpl\".\"$ver\"[]" "$CONFIG")
     if [ -d "$path" ] && [ -n "$pkgs" ]; then
       echo "📦 $proj ($tmpl $ver)"
-      cd "$path" && npm install $pkgs
+      cd "$path" && npm_install_safe $pkgs
     else
       echo "⚠️  $proj dilewati (folder/template tidak valid)"
     fi
@@ -117,7 +145,7 @@ to_entries[] as $main |
     pkgs=$(jq -r ".\"$tmpl\".\"$ver\"[]" "$CONFIG")
     if [ -d "$path" ] && [ -n "$pkgs" ]; then
       echo "📦 Folder $path ($tmpl $ver)"
-      cd "$path" && npm install $pkgs
+      cd "$path" && npm_install_safe $pkgs
     else
       echo "⚠️  Folder/template tidak valid"
     fi
