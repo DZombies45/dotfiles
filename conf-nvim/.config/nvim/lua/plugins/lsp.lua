@@ -113,7 +113,7 @@ return {
       tailwindcss = {},
       jsonls = {},
       yamlls = {},
-      lua_ls = {},
+			--lua_ls = {},
     }
     local formatter = {
       'prettier', -- prettier formatter
@@ -131,23 +131,23 @@ return {
           server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
           require('lspconfig')[server_name].setup(server)
         end,
-        ['lua_ls'] = function()
-          -- configure lua server (with special settings)
-          lspconfig['lua_ls'].setup({
-            capabilities = capabilities,
-            settings = {
-              Lua = {
-                -- make the language server recognize "vim" global
-                diagnostics = {
-                  globals = { 'vim' },
-                },
-                completion = {
-                  callSnippet = 'Replace',
-                },
-              },
-            },
-          })
-        end,
+        --['lua_ls'] = function()
+        -- -- configure lua server (with special settings)
+        --  lspconfig['lua_ls'].setup({
+        --    capabilities = capabilities,
+        --    settings = {
+        --      Lua = {
+        --       -- make the language server recognize "vim" global
+        --        diagnostics = {
+        --         globals = { 'vim' },
+        --        },
+        --        completion = {
+        --          callSnippet = 'Replace',
+        --        },
+        --     },
+        --   },
+        --   })
+        --end,
       },
     })
   end,

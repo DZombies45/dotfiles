@@ -66,6 +66,11 @@ return {
 import {} from "@minecraft/server";
 ]], { i(1, "{ world, system }") })),
 
+  -- import Minecraft server-ui API
+  s("impserver-ui", fmt([[
+import {} from "@minecraft/server-ui";
+]], { i(1, "{ world, system }") })),
+
   -- system.runInterval
   s("interval", fmt([[
 system.runInterval(() => {{
