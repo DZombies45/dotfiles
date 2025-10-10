@@ -6,21 +6,9 @@ set -e
 project_name=$(basename "$PWD")
 project_name=${project_name#mc-}          # hapus prefix mc- jika ada
 target_dir="$HOME/storage/downloads/Termux/mc-$project_name"
-src_dir="./src"
-out_dir="./out"
-script_dir="./script"
-esbuild_script="./esbuild.js"
-
-skip_tsc=false
-skip_prettier=false
-skip_esbuild=false
-dry_run=false
 
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
-    --skip-tsc) skip_tsc=true ;;
-    --skip-prettier) skip_prettier=true ;;
-    --skip-esbuild) skip_esbuild=true ;;
     --target) shift; target_dir="$1" ;;
     --dry-run) dry_run=true ;;
     -h|--help)
@@ -28,9 +16,6 @@ while [[ "$#" -gt 0 ]]; do
 Usage: mc-export [options]
 
 Options:
-  --skip-tsc        Skip TypeScript compilation
-  --skip-prettier   Skip Prettier formatting
-  --skip-esbuild    Skip esbuild bundling
   --target <path>   Override export target dir
   --dry-run         Show actions but don't copy
   -h, --help        Show this help
@@ -41,7 +26,7 @@ EOF
   shift
 done
 
-echo "🚀 Exporting project: mc-$project_name"
+echo "🚀 Importing project: mc-$project_name"
 echo "📂 Target: $target_dir"
 [ "$dry_run" = true ] && echo "⚠️ Dry-run mode (no file changes)"
 
@@ -93,57 +78,20 @@ run_step() {
 
 # ---------------- determine steps ----------------
 steps=0
-[ "$skip_tsc" = false ] && steps=$((steps+1))
-[ "$skip_prettier" = false ] && steps=$((steps+1))
-[ "$skip_esbuild" = false ] && steps=$((steps+1))
 steps=$((steps+1))  # +1 for sync
 total_steps=$steps
 current_step=0
 
-# ---------------- 1) TypeScript (via npx) ----------------
-if [ "$skip_tsc" = false ]; then
-  current_step=$((current_step+1))
-  progress $((current_step-1)) $total_steps
-  echo
-  # prefer local tsc (npx --no-install), fallback to npx (remote), fallback to global tsc
-  run_step "Building TypeScript (tsc)" \
-    "npx --no-install tsc || npx tsc || tsc || ./node_modules/.bin/tsc"
-  progress $current_step $total_steps
-fi
-
-# ---------------- 2) Prettier (via npx) ----------------
-if [ "$skip_prettier" = false ]; then
-  current_step=$((current_step+1))
-  progress $((current_step-1)) $total_steps
-  echo
-  run_step "Formatting (Prettier)" \
-    "npx --no-install prettier --write \"**/*.js\" || npx prettier --write \"**/*.js\" || prettier --write \"**/*.js\""
-  progress $current_step $total_steps
-fi
-
-# ---------------- 3) esbuild ----------------
-if [ "$skip_esbuild" = false ]; then
-  current_step=$((current_step+1))
-  progress $((current_step-1)) $total_steps
-  echo
-  if [ -f "$esbuild_script" ]; then
-    run_step "Bundling (esbuild)" "node \"$esbuild_script\""
-  else
-    echo "⚠️ esbuild script tidak ditemukan: $esbuild_script — melewati"
-  fi
-  progress $current_step $total_steps
-fi
-
-# ---------------- 4) Sync (rsync) ----------------
+# ---------------- 1) Sync (rsync) ----------------
 current_step=$((current_step+1))
 progress $((current_step-1)) $total_steps
 echo
 mkdir -p "$target_dir"
-SYNC_CMD="rsync -a --delete --exclude 'node_modules' --exclude '.git' --exclude '.env' --exclude '*.log' ./ \"$target_dir\"/"
+SYNC_CMD="rsync -a --delete --exclude 'node_modules' --exclude '.git' --exclude '.env' --exclude '*.log' \"$target_dir\"/ ./"
 run_step "Syncing files to target" "$SYNC_CMD"
 progress $current_step $total_steps
 
 # final newline & toast
 echo
-termux-toast "Export mc-$project_name selesai" 2>/dev/null || true
-echo "🎉 Export selesai: $target_dir"
+termux-toast "Import mc-$project_name selesai" 2>/dev/null || true
+echo "🎉 Import selesai: $target_dir"
