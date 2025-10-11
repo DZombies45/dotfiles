@@ -61,31 +61,30 @@ run_step() {
   local cmd="$*"
   local tmp=$(mktemp)
   local percent=0
-  local step_speed=$(( (RANDOM % 3) + 1 ))  # biar tiap step beda sedikit
   local spin=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+  local speed=$(( (RANDOM % 3) + 1 ))
 
-  bash -lc "$cmd" >"$tmp" 2>&1 & cmd_pid=$!
+  bash -lc "$cmd" >"$tmp" 2>&1 & pid=$!
 
-  while kill -0 "$cmd_pid" 2>/dev/null; do
+  while kill -0 "$pid" 2>/dev/null; do
     for s in "${spin[@]}"; do
-      percent=$((percent + step_speed))
-      [ $percent -gt 95 ] && percent=95  # jangan sampai 100 sebelum selesai
-      printf "\r%s %s  " "$s" "$label"
+      percent=$((percent + speed))
+      [ $percent -gt 95 ] && percent=95
+      printf "\r%s %s " "$s" "$label"
       progress "$percent"
       sleep 0.12
-      if ! kill -0 "$cmd_pid" 2>/dev/null; then break 2; fi
+      if ! kill -0 "$pid" 2>/dev/null; then break 2; fi
     done
   done
-  wait "$cmd_pid"
-  status=$?
 
+  wait "$pid"
+  local status=$?
   if [ $status -ne 0 ]; then
-    printf "\r✖ %s gagal (exit %d)\n" "$label" "$status"
-    tail -n 80 "$tmp"
+    printf "\n✖ %s gagal (exit %d)\n" "$label" "$status"
+    tail -n 50 "$tmp"
     rm -f "$tmp"
     exit $status
   fi
-
   progress 100
   printf "  ✅ %s selesai\n" "$label"
   rm -f "$tmp"
@@ -107,7 +106,7 @@ if [ "$skip_tsc" = false ]; then
   echo
   # prefer local tsc (npx --no-install), fallback to npx (remote), fallback to global tsc
   run_step "Building TypeScript (tsc)" \
-    "npx --no-install tsc || npx tsc || tsc || ./node_modules/.bin/tsc"
+    "npx tsc"
   progress $current_step $total_steps
 fi
 
@@ -117,7 +116,7 @@ if [ "$skip_prettier" = false ]; then
   progress $((current_step-1)) $total_steps
   echo
   run_step "Formatting (Prettier)" \
-    "npx --no-install prettier --write \"**/*.js\" || npx prettier --write \"**/*.js\" || prettier --write \"**/*.js\""
+    "npx prettier --write \"**/*.js\""
   progress $current_step $total_steps
 fi
 

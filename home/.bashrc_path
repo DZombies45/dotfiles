@@ -1,0 +1,4 @@
+export PATH="$HOME:$PATH"
+export NODE_PATH=$(npm root -g)
+
+echo "path loaded"

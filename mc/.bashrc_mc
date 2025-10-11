@@ -1,0 +1,11 @@
+
+alias mc="cd storage/shared/Android/data/com.mojang.minecraftpe/files/games/com.mojang/"
+alias backup_mc="bash ~/.mc/backup-mc.sh"
+alias upnpm="ncu --reject '/^@minecraft\//' -u && npm install"
+alias mc-export="~/.mc/mc-export.sh"
+alias mc-import="~/.mc/mc-import.sh"
+
+alias update="~/.mc/update"
+source ~/.mc/.bash_completion
+
+echo "mc loaded"

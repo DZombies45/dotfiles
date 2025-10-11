@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-CONFIG="$HOME/.mc-template.json"
-PROJECTS="$HOME/.mc-projects.json"
+CONFIG="$HOME/.mc/.mc-template.json"
+PROJECTS="$HOME/.mc/.mc-projects.json"
 
 [ ! -f "$CONFIG" ] && echo '{}' > "$CONFIG"
 [ ! -f "$PROJECTS" ] && echo '{}' > "$PROJECTS"
