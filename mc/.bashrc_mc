@@ -4,6 +4,7 @@ alias backup_mc="bash ~/.mc/backup-mc.sh"
 alias upnpm="ncu --reject '/^@minecraft\//' -u && npm install"
 alias mc-export="~/.mc/mc-export.sh"
 alias mc-import="~/.mc/mc-import.sh"
+alias mc-test="~/.mc/mc-test.sh"
 
 alias update="~/.mc/update"
 source ~/.mc/.bash_completion
