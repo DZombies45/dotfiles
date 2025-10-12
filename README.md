@@ -17,29 +17,33 @@ It helps keep my setup consistent, portable, and version-controlled.
 
 ## 📂 Struktur Direktori
 
+```
 dotfiles/
 ├── .stowrc # konfigurasi ignore untuk stow
 ├── README.md # dokumentasi ini
 ├── config/ # konfigurasi umum aplikasi
 ├── home/ # file di $HOME
 ├── mc/ # tools untuk Minecraft Bedrock dev
-├── termux/ # konfigurasi khusus Termux  
+├── termux/ # konfigurasi khusus Termux
 └── conf-\*/ # konfigurasi aplikasi spesifik (neofetch, nvim, dll)
+```
 
 Contoh isi aktual:
 
- ./
-├──  conf-bat/
-├──  conf-lazygit/
-├──  conf-neofetch/
-├──  conf-nvim/
-├──  conf-ranger/
-├──  conf-starship/
-├──  home/ # berisi file di $HOME (contoh: .bashrc)
-├──  mc/ # alat bantu dev Minecraft
-├──  termux/ # konfigurasi Termux
-├──  .stowrc
-└──  README.md
+```
+dotfiles/
+├── conf-bat/
+├── conf-lazygit/
+├── conf-neofetch/
+├── conf-nvim/
+├── conf-ranger/
+├── conf-starship/
+├── home/ # berisi file di $HOME (contoh: .bashrc)
+├── mc/ # alat bantu dev Minecraft
+├── termux/ # konfigurasi Termux
+├── .stowrc
+└── README.md
+```
 
 <details>
 <summary>🌐 English</summary>
@@ -198,4 +202,3 @@ Dengan satu perintah, seluruh lingkungan kerja bisa direplikasi.
 With a single command, the entire working environment can be replicated anywhere.
 
 </details>
-```
