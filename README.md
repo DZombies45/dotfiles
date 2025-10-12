@@ -25,7 +25,7 @@ dotfiles/
 ├── home/ # file di $HOME
 ├── mc/ # tools untuk Minecraft Bedrock dev
 ├── termux/ # konfigurasi khusus Termux
-└── conf-\*/ # konfigurasi aplikasi spesifik (neofetch, nvim, dll)
+└── conf-*/ # konfigurasi aplikasi spesifik (neofetch, nvim, dll)
 ```
 
 Contoh isi aktual:
@@ -53,7 +53,9 @@ dotfiles/
 Each folder mirrors its destination in `$HOME`.  
 Example:  
 `home/.bashrc` → `~/.bashrc`  
-`config/.config/nvim` → `~/.config/nvim`
+`conf-nvim/.config/nvim` → `~/.config/nvim`
+
+`conf-*` is config - the name of app inside of config
 
 </details>
 
@@ -69,7 +71,9 @@ cd ~/dotfiles
 ```
 
 <details>
-<summary>🌐 English</summary>Clone this repository to your home directory.
+<summary>🌐 English</summary>
+
+### Clone this repository to your home directory.
 
 </details>
 
@@ -77,20 +81,26 @@ cd ~/dotfiles
 
 2️⃣ Install GNU Stow
 
-```bash
 Debian/Ubuntu/Termux
 
+```bash
 sudo apt install stow
+```
 
 Arch Linux
 
+```bash
 sudo pacman -S stow
 ```
 
 <details>
-<summary>🌐 English</summary>Install GNU Stow according to your system.
+<summary>🌐 English</summary>
+
+### Install GNU Stow according to your system.
 
 ## </details>
+
+---
 
 3️⃣ Stow konfigurasi yang diinginkan
 
@@ -108,17 +118,26 @@ stow mc
 
 # Untuk Termux setup
 stow termux
+```
 
 Atau semua sekaligus:
 
+```bash
 stow */
 ```
 
 <details>
-<summary>🌐 English</summary>Use stow to symlink configurations.
-You can link specific folders or all at once using stow */.
+<summary>🌐 English</summary>
+
+### Stow your desired configuration
+
+Use stow to symlink configurations.
+
+You can link specific folders or all at once using `stow */``.
 
 ## </details>
+
+---
 
 4️⃣ Verifikasi hasil
 
@@ -127,9 +146,15 @@ ls -l ~ | grep dotfiles
 ```
 
 <details>
-<summary>🌐 English</summary>Check whether symlinks were created successfully.
+<summary>🌐 English</summary>
+
+### Verify
+
+Check whether symlinks were created successfully.
 
 ## </details>
+
+---
 
 ⚡ Catatan
 
@@ -150,8 +175,14 @@ stow -R */
 ```
 
 <details>
-<summary>🌐 English</summary>Each folder must mirror the path in $HOME.
+<summary>🌐 English</summary>
+
+### NOTES
+
+Each folder must mirror the path in $HOME.
+
 Move existing files out before stowing to avoid conflicts.
+
 To refresh symlinks:
 
 cd ~/dotfiles
@@ -159,11 +190,11 @@ stow -R \*/
 
 ## </details>
 
+---
+
 💡 Tips
 
-```bash
-stow -D <folder> untuk unstow konfigurasi (hapus symlink)
-```
+`stow -D <folder>` untuk unstow konfigurasi (hapus symlink)
 
 Simpan repo di ~/dotfiles agar path tetap konsisten
 
@@ -174,17 +205,25 @@ termux-setup-storage
 ```
 
 <details>
-<summary>🌐 English</summary>Use stow -D <folder> to remove a symlink.
+<summary>🌐 English</summary>
+
+### Tips
+
+Use `stow -D <folder>` to remove a symlink.
 
 Keep this repo at ~/dotfiles for consistent paths.
 
 In Termux, enable storage permissions:
 
+```bash
 termux-setup-storage
+```
 
 ## </details>
 
-📌 Referensi
+---
+
+📌 Referensi/Reference
 
 [GNU Stow Manual](https://www.gnu.org/software/stow/manual/stow.html)
 
@@ -198,7 +237,12 @@ Menjaga konfigurasi tetap sinkron, mudah dipindah, dan versioned.
 Dengan satu perintah, seluruh lingkungan kerja bisa direplikasi.
 
 <details>
-<summary>🌐 English</summary>Keep configurations synchronized, portable, and versioned.
+<summary>🌐 English</summary>
+
+### why?
+
+Keep configurations synchronized, portable, and versioned.
+
 With a single command, the entire working environment can be replicated anywhere.
 
 </details>
