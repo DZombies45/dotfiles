@@ -97,3 +97,39 @@ _update_autocomplete() {
 
 # Hubungkan ke perintah update
 complete -F _update_autocomplete update
+
+# mc-export
+_mc_export_complete() {
+  local cur prev opts
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  opts="--no-build --folder --to --help"
+
+  COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+  return 0
+}
+complete -F _mc_export_complete mc-export
+
+# mc-import
+_mc_import_complete() {
+  local cur prev opts
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  opts="--from --help"
+
+  COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+  return 0
+}
+complete -F _mc_export_complete mc-import
+
+# mc-test
+_mc_test_complete() {
+  local cur prev opts
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  opts="--no-build --folder --to --help"
+
+  COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+  return 0
+}
+complete -F _mc_export_complete mc-test
