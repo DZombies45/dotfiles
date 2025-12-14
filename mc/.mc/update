@@ -1,153 +1,189 @@
 #!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
 
 CONFIG="$HOME/.mc/.mc-template.json"
 PROJECTS="$HOME/.mc/.mc-projects.json"
 
+mkdir -p "$HOME/.mc"
 [ ! -f "$CONFIG" ] && echo '{}' > "$CONFIG"
 [ ! -f "$PROJECTS" ] && echo '{}' > "$PROJECTS"
 
-cmd="$1"
+cmd="${1:-}"
+
+# ===============================
+# Helper warna
+# ===============================
+green() { echo -e "\033[32m$*\033[0m"; }
+yellow() { echo -e "\033[33m$*\033[0m"; }
+red() { echo -e "\033[31m$*\033[0m"; }
 
 # ===============================
 # Helper: npm install dengan fallback
 # ===============================
 npm_install_safe() {
   pkgs=("$@")
+  if [ ${#pkgs[@]} -eq 0 ]; then
+    red "❌ Tidak ada paket untuk diinstal."
+    return 1
+  fi
   if ! npm install "${pkgs[@]}"; then
-  	 echo "⚠️  Masih gagal, coba dengan --force..."
+    yellow "⚠️  Gagal, coba --force..."
     if ! npm install --force "${pkgs[@]}"; then
-			echo "⚠️  Gagal install normal, coba dengan --legacy-peer-deps..."
-			if ! npm install --legacy-peer-deps "${pkgs[@]}"; then
-       echo "❌ Instalasi gagal total untuk paket: ${pkgs[*]}"
+      yellow "⚠️  Masih gagal, coba --legacy-peer-deps..."
+      if ! npm install --legacy-peer-deps "${pkgs[@]}"; then
+        red "❌ Instalasi gagal total: ${pkgs[*]}"
         return 1
       fi
     fi
   fi
+  green "✅ Instalasi berhasil."
   return 0
+}
+
+# ===============================
+# Expand path agar selalu absolut
+# ===============================
+expand_path() {
+  local input="$1"
+  if [[ "$input" == "~/"* ]]; then
+    echo "$HOME/${input#~/}"
+  elif [[ "$input" == "~" ]]; then
+    echo "$HOME"
+  else
+    echo "$input"
+  fi
 }
 
 case "$cmd" in
   list-templates)
     jq -r '
-    if length == 0 then
-      "❌ Tidak ada template tersimpan."
-    else
-      to_entries[] as $main |
-      (
-        "📦 \($main.key)" + "\n" +
+      if length == 0 then
+        "❌ Tidak ada template tersimpan."
+      else
+        to_entries[] as $main |
         (
-          $main.value
-          | to_entries
-          | map(
-              "  ⬢ \(.key):\n" +
-              (
-                (if (.value|type)=="array" then .value else [ .value ] end)
-                | map("     • \(.)")
-                | join("\n")
+          "📦 \($main.key)" + "\n" +
+          (
+            $main.value
+            | to_entries
+            | map(
+                "  ⬢ \(.key):\n" +
+                (
+                  (if (.value|type)=="array" then .value else [ .value ] end)
+                  | map("     • \(.)")
+                  | join("\n")
+                )
               )
-            )
-          | join("\n")
+            | join("\n")
+          )
         )
-      )
-    end
+      end
     ' "$CONFIG"
     ;;
   list-projects)
     jq -r '
-    if length == 0 then
-      "❌ Tidak ada project tersimpan."
-    else
-      to_entries[] |
-      "📂 \(.key)\n  📁 Path    : \(.value.path)\n  📦 Template: \(.value.template) [\(.value.version)]"
-    end
+      if length == 0 then
+        "❌ Tidak ada project tersimpan."
+      else
+        to_entries[] |
+        "📂 \(.key)\n  📁 Path    : \(.value.path)\n  📦 Template: \(.value.template) [\(.value.version)]"
+      end
     ' "$PROJECTS"
     ;;
   add-template)
     name="$2"; version="$3"; shift 3
     pkgs=("$@")
-    if [ ${#pkgs[@]} -eq 0 ]; then
-      echo "❌ Masukkan daftar package!"
+    if [ -z "${name:-}" ] || [ -z "${version:-}" ]; then
+      red "Usage: update add-template <nama> <versi> <pkg...>"
       exit 1
     fi
-    new_json=$(jq --arg n "$name" --arg v "$version" --argjson pkgs "$(printf '%s\n' "${pkgs[@]}" | jq -R . | jq -s .)" \
-      '.[$n][$v] = $pkgs' "$CONFIG")
-    echo "$new_json" > "$CONFIG"
-    echo "✅ Template '$name' versi '$version' ditambahkan."
+    if [ ${#pkgs[@]} -eq 0 ]; then
+      red "❌ Masukkan daftar package!"
+      exit 1
+    fi
+    tmp=$(mktemp)
+    jq --arg n "$name" --arg v "$version" --argjson pkgs "$(printf '%s\n' "${pkgs[@]}" | jq -R . | jq -s .)" \
+      '.[$n][$v] = $pkgs' "$CONFIG" > "$tmp" && mv "$tmp" "$CONFIG"
+    green "✅ Template '$name' versi '$version' ditambahkan."
     ;;
   add-project)
-    proj="$2"; path="$3"; template="$4"; version="$5"
-    if [ -z "$proj" ] || [ -z "$path" ] || [ -z "$template" ] || [ -z "$version" ]; then
-      echo "Usage: update add-project <nama> <path> <template> <version>"
+    proj="$2"; path=$(expand_path "$3"); tmpl="$4"; version="$5"
+    if [ -z "${proj:-}" ] || [ -z "${path:-}" ] || [ -z "${tmpl:-}" ] || [ -z "${version:-}" ]; then
+      red "Usage: update add-project <nama> <path> <template> <version>"
       exit 1
     fi
-    new_json=$(jq --arg p "$proj" --arg path "$path" --arg t "$template" --arg v "$version" \
-      '.[$p] = { path: $path, template: $t, version: $v }' "$PROJECTS")
-    echo "$new_json" > "$PROJECTS"
-    echo "✅ Project '$proj' ditambahkan."
+    if [ ! -d "$path" ]; then
+      yellow "⚠️  Path $path tidak ditemukan, tetap disimpan."
+    fi
+    tmp=$(mktemp)
+    jq --arg p "$proj" --arg path "$path" --arg t "$tmpl" --arg v "$version" \
+      '.[$p] = { path: $path, template: $t, version: $v }' "$PROJECTS" > "$tmp" && mv "$tmp" "$PROJECTS"
+    green "✅ Project '$proj' ditambahkan."
     ;;
   remove-project)
     proj="$2"
-    new_json=$(jq "del(.\"$proj\")" "$PROJECTS")
-    echo "$new_json" > "$PROJECTS"
-    echo "✅ Project '$proj' dihapus."
+    tmp=$(mktemp)
+    jq "del(.\"$proj\")" "$PROJECTS" > "$tmp" && mv "$tmp" "$PROJECTS"
+    green "✅ Project '$proj' dihapus."
     ;;
   set-version)
     proj="$2"; version="$3"
-    if ! jq -e ".\"$proj\"" "$PROJECTS" > /dev/null; then
-      echo "❌ Project '$proj' tidak ditemukan."
+    if ! jq -e ".\"$proj\"" "$PROJECTS" >/dev/null; then
+      red "❌ Project '$proj' tidak ditemukan."
       exit 1
     fi
-    new_json=$(jq --arg p "$proj" --arg v "$version" '.[$p].version = $v' "$PROJECTS")
-    echo "$new_json" > "$PROJECTS"
-    echo "✅ Project $proj sekarang pakai versi $version."
+    tmp=$(mktemp)
+    jq --arg p "$proj" --arg v "$version" '.[$p].version = $v' "$PROJECTS" > "$tmp" && mv "$tmp" "$PROJECTS"
+    green "✅ Project $proj sekarang pakai versi $version."
     ;;
   run)
-    filter="$2" # optional: beta/stable/...
+    filter="${2:-}"
     for proj in $(jq -r 'keys[]' "$PROJECTS"); do
       path=$(jq -r ".\"$proj\".path" "$PROJECTS")
       tmpl=$(jq -r ".\"$proj\".template" "$PROJECTS")
       ver=$(jq -r ".\"$proj\".version" "$PROJECTS")
+      path=$(expand_path "$path")
       if [ -n "$filter" ] && [ "$ver" != "$filter" ]; then
         continue
       fi
       pkgs=$(jq -r ".\"$tmpl\".\"$ver\"[]" "$CONFIG")
       if [ -d "$path" ] && [ -n "$pkgs" ]; then
-        echo "📦 $proj ($tmpl $ver)"
+        echo -e "\n📦 $(green "$proj") ($tmpl $ver)"
         cd "$path" && npm_install_safe $pkgs
       else
-        echo "⚠️  $proj dilewati (folder/template tidak valid)"
+        yellow "⚠️  $proj dilewati (folder/template tidak valid)"
       fi
     done
     ;;
   run-project)
     proj="$2"
-    if ! jq -e ".\"$proj\"" "$PROJECTS" > /dev/null; then
-      echo "❌ Project '$proj' tidak ditemukan."
+    if ! jq -e ".\"$proj\"" "$PROJECTS" >/dev/null; then
+      red "❌ Project '$proj' tidak ditemukan."
       exit 1
     fi
-    path=$(jq -r ".\"$proj\".path" "$PROJECTS")
+    path=$(expand_path "$(jq -r ".\"$proj\".path" "$PROJECTS")")
     tmpl=$(jq -r ".\"$proj\".template" "$PROJECTS")
     ver=$(jq -r ".\"$proj\".version" "$PROJECTS")
     pkgs=$(jq -r ".\"$tmpl\".\"$ver\"[]" "$CONFIG")
     if [ -d "$path" ] && [ -n "$pkgs" ]; then
-      echo "📦 $proj ($tmpl $ver)"
+      echo "📦 $(green "$proj") ($tmpl $ver)"
       cd "$path" && npm_install_safe $pkgs
     else
-      echo "⚠️  $proj dilewati (folder/template tidak valid)"
+      yellow "⚠️  $proj dilewati (folder/template tidak valid)"
     fi
     ;;
   run-folder)
-    path="$2"; tmpl="$3"; ver="$4"
+    path=$(expand_path "$2"); tmpl="$3"; ver="$4"
     if [ -z "$path" ] || [ -z "$tmpl" ] || [ -z "$ver" ]; then
-      echo "Usage: update run-folder <path> <template> <versi>"
+      red "Usage: update run-folder <path> <template> <versi>"
       exit 1
     fi
     pkgs=$(jq -r ".\"$tmpl\".\"$ver\"[]" "$CONFIG")
     if [ -d "$path" ] && [ -n "$pkgs" ]; then
-      echo "📦 Folder $path ($tmpl $ver)"
+      echo "📦 Folder $(green "$path") ($tmpl $ver)"
       cd "$path" && npm_install_safe $pkgs
     else
-      echo "⚠️  Folder/template tidak valid"
+      yellow "⚠️  Folder/template tidak valid"
     fi
     ;;
   *)
