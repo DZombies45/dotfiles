@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/usr/bin/env bash
 # ==============================================
 # Minecraft Bedrock Backup Script (Termux)
 # Dengan Progress Bar & Toast Notification
@@ -7,8 +7,8 @@
 set -euo pipefail
 
 # ===== Konfigurasi =====
-readonly SOURCE="/storage/emulated/0/Android/data/com.mojang.minecraftpe/files/games/com.mojang"
-readonly DEST_BASE="/storage/emulated/0/Documents/mc-backup"
+readonly SOURCE="$HOME/storage/emulated/0/Android/data/com.mojang.minecraftpe/files/games/com.mojang"
+readonly DEST_BASE="$HOME/storage/emulated/0/Documents/mc-backup"
 readonly MAX_BACKUP=10
 readonly LOGFILE="$DEST_BASE/backup.log"
 

@@ -1,31 +1,22 @@
-clear
-echo ""
+# load shared shell config
+#
+for f in "$HOME/.config/shell/"*.sh; do
+  [ -f "$f" ] && . "$f"
+done
 
-## import path
-if [ -f ~/.bashrc_eval ]; then
-    source ~/.bashrc_eval
-    sleep .5
+# load bash completion
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+  source /usr/share/bash-completion/bash_completion
+elif [ -f /etc/bash_completion ]; then
+  source /etc/bash_completion
 fi
 
-## import path
-if [ -f ~/.bashrc_path ]; then
-    source ~/.bashrc_path
-    sleep .5
+eval "$(starship init bash)"
+eval "$(zoxide init bash)"
+
+# banner hanya di interactive shell utama
+if [ -f "$HOME/.ascii-logo.txt" ]; then
+	echo ""
+	echo -e "$(cat ~/.ascii-logo.txt)"
 fi
 
-## import alias
-if [ -f ~/.bashrc_alias ]; then
-    source ~/.bashrc_alias
-    sleep .5
-fi
-
-## import mc command
-if [ -f ~/.bashrc_mc ]; then
-    source ~/.bashrc_mc
-    sleep .5
-fi
-
-## after all of it, do this
-clear
-echo -e "$(cat ~/.ascii-logo.txt)"
-echo ""

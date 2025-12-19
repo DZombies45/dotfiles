@@ -1,0 +1,14 @@
+#compdef mc-*
+
+_mc_dynamic() {
+  local -a cmds
+  local bin_dir="$HOME/.local/bin"
+
+  cmds=(
+    ${(f)"$(ls $bin_dir/mc-* 2>/dev/null | sed 's#.*/##')"}
+  )
+
+  _describe 'mc commands' cmds
+}
+
+_mc_dynamic

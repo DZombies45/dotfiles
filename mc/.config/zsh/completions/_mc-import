@@ -1,0 +1,5 @@
+#compdef mc-import
+
+_arguments \
+  '--from' \
+  '--help'

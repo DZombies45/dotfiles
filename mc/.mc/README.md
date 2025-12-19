@@ -1,17 +1,5 @@
 to make this work, do
 
-```bash
-chmod +x ~/.mc/update
-
-chmod +x ~/.mc/backup-mc.sh
-
-chmod +x ~/.mc/mc-import.sh
-
-chmod +x ~/.mc/mc-export.sh
-
-chmod +x ~/.mc/mc-test.sh
-```
-
 usage:
 
 - update

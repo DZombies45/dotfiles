@@ -1,0 +1,92 @@
+#compdef mc-update
+
+local CONFIG="$HOME/.mc/.mc-template.json"
+local PROJECTS="$HOME/.mc/.mc-projects.json"
+
+_mc_update() {
+  local cmd
+
+  _arguments -C \
+    '1:command:->cmds' \
+    '*::args:->args'
+
+  case $state in
+    cmds)
+      _values 'mc-update commands' \
+        list-templates \
+        list-projects \
+        add-template \
+        add-project \
+        remove-project \
+        set-version \
+        run \
+        run-project \
+        run-folder
+      ;;
+    args)
+      cmd=$words[2]
+
+      case $cmd in
+        list-templates|list-projects)
+          return
+          ;;
+
+        add-template)
+          # nama, versi, lalu bebas
+          _arguments \
+            '2:template name:' \
+            '3:version:' \
+            '*:packages:'
+          ;;
+
+        add-project)
+          _arguments \
+            '2:project name:' \
+            '3:path:_files -/' \
+            '4:template:_mc_update_templates' \
+            '5:version:_mc_update_versions'
+          ;;
+
+        remove-project|run-project|set-version)
+          _mc_update_projects
+          ;;
+
+        run)
+          _mc_update_versions_unique
+          ;;
+
+        run-folder)
+          _arguments \
+            '2:path:_files -/' \
+            '3:template:_mc_update_templates' \
+            '4:version:_mc_update_versions'
+          ;;
+      esac
+      ;;
+  esac
+}
+
+# ===== helper =====
+
+_mc_update_templates() {
+  [[ -f "$CONFIG" ]] || return
+  _values 'templates' ${(f)"$(jq -r 'keys[]' "$CONFIG")"}
+}
+
+_mc_update_versions() {
+  [[ -f "$CONFIG" ]] || return
+  local tmpl=${words[-2]}
+  _values 'versions' ${(f)"$(jq -r --arg t "$tmpl" '.[$t] | keys[]?' "$CONFIG")"}
+}
+
+_mc_update_projects() {
+  [[ -f "$PROJECTS" ]] || return
+  _values 'projects' ${(f)"$(jq -r 'keys[]' "$PROJECTS")"}
+}
+
+_mc_update_versions_unique() {
+  [[ -f "$PROJECTS" ]] || return
+  _values 'versions' ${(f)"$(jq -r '.[].version' "$PROJECTS" | sort -u)"}
+}
+
+_mc_update

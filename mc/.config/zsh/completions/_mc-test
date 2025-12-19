@@ -1,0 +1,7 @@
+#compdef mc-test
+
+_arguments \
+  '--no-build' \
+  '--folder' \
+  '--to' \
+  '--help'

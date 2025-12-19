@@ -96,7 +96,7 @@ _update_autocomplete() {
 }
 
 # Hubungkan ke perintah update
-complete -F _update_autocomplete update
+complete -F _update_autocomplete mc-update
 
 # mc-export
 _mc_export_complete() {

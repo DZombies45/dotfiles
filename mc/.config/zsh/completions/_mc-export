@@ -1,0 +1,7 @@
+#compdef mc-export
+
+_arguments \
+  '--no-build' \
+  '--folder' \
+  '--to' \
+  '--help'

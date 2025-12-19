@@ -1,0 +1,9 @@
+# load shared shell logic (POSIX)
+for f in ~/.config/shell/*.sh; do
+  [ -f "$f" ] && source "$f"
+done
+
+# load extra zsh config (completion, keybind, dll)
+for f in ~/.config/zsh/zshrc.d/*.zsh; do
+  [ -f "$f" ] && source "$f"
+done
