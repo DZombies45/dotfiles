@@ -1,92 +1,119 @@
-#compdef mc-update
+#!/usr/bin/env zsh
 
-local CONFIG="$HOME/.mc/.mc-template.json"
-local PROJECTS="$HOME/.mc/.mc-projects.json"
+_mc-update() {
+    local -a subcommands
+    subcommands=(
+        'list-templates:List semua template'
+        'list-projects:List semua project'
+        'add-template:Tambah template baru'
+        'add-project:Tambah project baru'
+        'remove-project:Hapus project'
+        'set-version:Ubah versi template project'
+        'run:Install packages untuk semua/semua versi'
+        'run-project:Install packages untuk project spesifik'
+        'run-folder:Install packages untuk folder spesifik'
+    )
 
-_mc_update() {
-  local cmd
+    local -a version_opts project_names template_names
+    local state curcontext="$curcontext"
 
-  _arguments -C \
-    '1:command:->cmds' \
-    '*::args:->args'
+    _arguments -C \
+        '1: :->subcommand' \
+        '*:: :->args'
 
-  case $state in
-    cmds)
-      _values 'mc-update commands' \
-        list-templates \
-        list-projects \
-        add-template \
-        add-project \
-        remove-project \
-        set-version \
-        run \
-        run-project \
-        run-folder
-      ;;
-    args)
-      cmd=$words[2]
-
-      case $cmd in
-        list-templates|list-projects)
-          return
-          ;;
-
-        add-template)
-          # nama, versi, lalu bebas
-          _arguments \
-            '2:template name:' \
-            '3:version:' \
-            '*:packages:'
-          ;;
-
-        add-project)
-          _arguments \
-            '2:project name:' \
-            '3:path:_files -/' \
-            '4:template:_mc_update_templates' \
-            '5:version:_mc_update_versions'
-          ;;
-
-        remove-project|run-project|set-version)
-          _mc_update_projects
-          ;;
-
-        run)
-          _mc_update_versions_unique
-          ;;
-
-        run-folder)
-          _arguments \
-            '2:path:_files -/' \
-            '3:template:_mc_update_templates' \
-            '4:version:_mc_update_versions'
-          ;;
-      esac
-      ;;
-  esac
+    case $state in
+        subcommand)
+            _describe -t commands 'mc-update subcommands' subcommands
+            ;;
+        args)
+            case ${words[1]} in
+                add-template)
+                    if [[ $CURRENT -eq 2 ]]; then
+                        _message "Nama template"
+                    elif [[ $CURRENT -eq 3 ]]; then
+                        _message "Versi template"
+                    elif [[ $CURRENT -eq 4 ]]; then
+                        _message "Package npm (contoh: react react-dom)"
+                    fi
+                    ;;
+                add-project)
+                    if [[ $CURRENT -eq 2 ]]; then
+                        _message "Nama project"
+                    elif [[ $CURRENT -eq 3 ]]; then
+                        _files -/
+                    elif [[ $CURRENT -eq 4 ]]; then
+                        # Ambil daftar template dari config
+                        if [[ -f ~/.mc/.mc-template.json ]]; then
+                            template_names=(${(f)"$(jq -r 'keys[]' ~/.mc/.mc-template.json 2>/dev/null)"})
+                            _describe -t templates 'Available templates' template_names
+                        fi
+                    elif [[ $CURRENT -eq 5 ]]; then
+                        # Ambil versi untuk template yang dipilih
+                        local selected_template="${words[4]}"
+                        if [[ -n "$selected_template" && -f ~/.mc/.mc-template.json ]]; then
+                            version_opts=(${(f)"$(jq -r ".\"$selected_template\" | keys[]" ~/.mc/.mc-template.json 2>/dev/null)"})
+                            _describe -t versions 'Available versions' version_opts
+                        fi
+                    fi
+                    ;;
+                remove-project|run-project)
+                    if [[ $CURRENT -eq 2 ]]; then
+                        # Ambil daftar project dari config
+                        if [[ -f ~/.mc/.mc-projects.json ]]; then
+                            project_names=(${(f)"$(jq -r 'keys[]' ~/.mc/.mc-projects.json 2>/dev/null)"})
+                            _describe -t projects 'Available projects' project_names
+                        fi
+                    fi
+                    ;;
+                set-version)
+                    if [[ $CURRENT -eq 2 ]]; then
+                        # Ambil daftar project
+                        if [[ -f ~/.mc/.mc-projects.json ]]; then
+                            project_names=(${(f)"$(jq -r 'keys[]' ~/.mc/.mc-projects.json 2>/dev/null)"})
+                            _describe -t projects 'Available projects' project_names
+                        fi
+                    elif [[ $CURRENT -eq 3 ]]; then
+                        # Ambil template dari project yang dipilih, lalu daftar versinya
+                        local selected_project="${words[2]}"
+                        if [[ -n "$selected_project" && -f ~/.mc/.mc-projects.json ]]; then
+                            local template=$(jq -r ".\"$selected_project\".template" ~/.mc/.mc-projects.json 2>/dev/null)
+                            if [[ -n "$template" && -f ~/.mc/.mc-template.json ]]; then
+                                version_opts=(${(f)"$(jq -r ".\"$template\" | keys[]" ~/.mc/.mc-template.json 2>/dev/null)"})
+                                _describe -t versions 'Available versions' version_opts
+                            fi
+                        fi
+                    fi
+                    ;;
+                run)
+                    if [[ $CURRENT -eq 2 ]]; then
+                        # Ambil semua versi yang unik dari semua template
+                        if [[ -f ~/.mc/.mc-template.json ]]; then
+                            version_opts=(${(f)"$(jq -r '.[] | keys[]' ~/.mc/.mc-template.json 2>/dev/null | sort -u)"})
+                            _describe -t versions 'Available versions' version_opts
+                        fi
+                    fi
+                    ;;
+                run-folder)
+                    if [[ $CURRENT -eq 2 ]]; then
+                        _files -/
+                    elif [[ $CURRENT -eq 3 ]]; then
+                        # Ambil daftar template
+                        if [[ -f ~/.mc/.mc-template.json ]]; then
+                            template_names=(${(f)"$(jq -r 'keys[]' ~/.mc/.mc-template.json 2>/dev/null)"})
+                            _describe -t templates 'Available templates' template_names
+                        fi
+                    elif [[ $CURRENT -eq 4 ]]; then
+                        # Ambil versi untuk template yang dipilih
+                        local selected_template="${words[3]}"
+                        if [[ -n "$selected_template" && -f ~/.mc/.mc-template.json ]]; then
+                            version_opts=(${(f)"$(jq -r ".\"$selected_template\" | keys[]" ~/.mc/.mc-template.json 2>/dev/null)"})
+                            _describe -t versions 'Available versions' version_opts
+                        fi
+                    fi
+                    ;;
+            esac
+            ;;
+    esac
 }
 
-# ===== helper =====
-
-_mc_update_templates() {
-  [[ -f "$CONFIG" ]] || return
-  _values 'templates' ${(f)"$(jq -r 'keys[]' "$CONFIG")"}
-}
-
-_mc_update_versions() {
-  [[ -f "$CONFIG" ]] || return
-  local tmpl=${words[-2]}
-  _values 'versions' ${(f)"$(jq -r --arg t "$tmpl" '.[$t] | keys[]?' "$CONFIG")"}
-}
-
-_mc_update_projects() {
-  [[ -f "$PROJECTS" ]] || return
-  _values 'projects' ${(f)"$(jq -r 'keys[]' "$PROJECTS")"}
-}
-
-_mc_update_versions_unique() {
-  [[ -f "$PROJECTS" ]] || return
-  _values 'versions' ${(f)"$(jq -r '.[].version' "$PROJECTS" | sort -u)"}
-}
-
-_mc_update
+compdef _mc-update mc-update

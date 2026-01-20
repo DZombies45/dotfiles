@@ -7,3 +7,9 @@ done
 for f in ~/.config/zsh/zshrc.d/*.zsh; do
   [ -f "$f" ] && source "$f"
 done
+
+# banner hanya di interactive shell utama
+if [ -f "$HOME/.ascii-logo.txt" ]; then
+	echo ""
+	echo -e "$(cat ~/.ascii-logo.txt)"
+fi

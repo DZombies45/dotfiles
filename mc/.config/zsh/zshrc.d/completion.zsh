@@ -3,5 +3,31 @@ fpath=(
   $HOME/.config/zsh/completions
   $fpath
 )
+# Inisialisasi completion system
+
+autoload -Uz compinit
+# Skip security check untuk completion cache yang sudah ada
+compinit -u
+
+# Auto-load completion untuk mc-update
+if [ -f "$HOME/.config/zsh/completions/_mc-update" ]; then
+    autoload -Uz _mc-update
+    compdef _mc-update mc-update
+fi
+# Auto-load completion untuk mc-help
+if [ -f "$HOME/.config/zsh/completions/_mc-test"]; then
+    autoload -Uz _mc-test
+    compdef _mc-test mc-test
+fi
+# Auto-load completion untuk mc-help
+if [ -f "$HOME/.config/zsh/completions/_mc-export"]; then
+    autoload -Uz _mc-export
+    compdef _mc-export mc-export
+fi
+# Auto-load completion untuk mc-help
+if [ -f "$HOME/.config/zsh/completions/_mc-import"]; then
+    autoload -Uz _mc-import
+    compdef _mc-import mc-import
+fi
 
 # oh-my-zsh sudah memanggil compinit

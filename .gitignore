@@ -1,3 +1,4 @@
 config/.config/gh/
 mc/.mc/.mc-project.json
 mc/.mc/.mc-template.json
+conf-nvim/.config/nvim/lazy-lock.json

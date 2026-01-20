@@ -11,6 +11,12 @@ elif [ -f /etc/bash_completion ]; then
   source /etc/bash_completion
 fi
 
+# load mc completion
+if [ -f ~/.config/bash/completion/mc ]; then
+  source ~/.config/bash/completion/mc
+fi
+
+
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
 

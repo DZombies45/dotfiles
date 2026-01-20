@@ -105,4 +105,4 @@ source $ZSH/oh-my-zsh.sh
 
 # ~/.zshrc
 
-source ./.zsh_core
+source ~/.zsh_core

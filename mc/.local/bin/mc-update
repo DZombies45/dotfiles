@@ -94,7 +94,7 @@ case "$cmd" in
     name="$2"; version="$3"; shift 3
     pkgs=("$@")
     if [ -z "${name:-}" ] || [ -z "${version:-}" ]; then
-      red "Usage: update add-template <nama> <versi> <pkg...>"
+      red "Usage: mc-update add-template <nama> <versi> <pkg...>"
       exit 1
     fi
     if [ ${#pkgs[@]} -eq 0 ]; then
@@ -109,7 +109,7 @@ case "$cmd" in
   add-project)
     proj="$2"; path=$(expand_path "$3"); tmpl="$4"; version="$5"
     if [ -z "${proj:-}" ] || [ -z "${path:-}" ] || [ -z "${tmpl:-}" ] || [ -z "${version:-}" ]; then
-      red "Usage: update add-project <nama> <path> <template> <version>"
+      red "Usage: mc-update add-project <nama> <path> <template> <version>"
       exit 1
     fi
     if [ ! -d "$path" ]; then
@@ -175,7 +175,7 @@ case "$cmd" in
   run-folder)
     path=$(expand_path "$2"); tmpl="$3"; ver="$4"
     if [ -z "$path" ] || [ -z "$tmpl" ] || [ -z "$ver" ]; then
-      red "Usage: update run-folder <path> <template> <versi>"
+      red "Usage: mc-update run-folder <path> <template> <versi>"
       exit 1
     fi
     pkgs=$(jq -r ".\"$tmpl\".\"$ver\"[]" "$CONFIG")
@@ -188,14 +188,14 @@ case "$cmd" in
     ;;
   *)
     echo "Usage:"
-    echo "  update list-templates"
-    echo "  update list-projects"
-    echo "  update add-template <nama> <versi> <pkg...>"
-    echo "  update add-project <nama> <path> <template> <versi>"
-    echo "  update remove-project <nama>"
-    echo "  update set-version <project> <versi>"
-    echo "  update run [versi]" 
-    echo "  update run-project <project>"
-    echo "  update run-folder <path> <template> <versi>"
+    echo "  mc-update list-templates"
+    echo "  mc-update list-projects"
+    echo "  mc-update add-template <nama> <versi> <pkg...>"
+    echo "  mc-update add-project <nama> <path> <template> <versi>"
+    echo "  mc-update remove-project <nama>"
+    echo "  mc-update set-version <project> <versi>"
+    echo "  mc-update run [versi]" 
+    echo "  mc-update run-project <project>"
+    echo "  mc-update run-folder <path> <template> <versi>"
     ;;
 esac

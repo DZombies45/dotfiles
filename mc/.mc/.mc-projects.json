@@ -2,7 +2,7 @@
   "shome": {
     "path": "/data/data/com.termux/files/home/mc-shome",
     "template": "mc-ui",
-    "version": "beta"
+    "version": "stable"
   },
   "tpr": {
     "path": "/data/data/com.termux/files/home/mc-tpr",
@@ -36,7 +36,17 @@
   },
   "vein": {
     "path": "/data/data/com.termux/files/home/mc-vein/",
-    "template": "mcui",
+    "template": "mc-ui",
+    "version": "stable"
+  },
+  "logic-gates": {
+    "path": "/data/data/com.termux/files/home/mc-tech/",
+    "template": "mc-ui",
     "version": "beta"
+  },
+  "script_helper": {
+    "path": "/data/data/com.termux/files/home/MCBE-ScriptAPI_helper",
+    "template": "mc-ui",
+    "version": "stable"
   }
 }
