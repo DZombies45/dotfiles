@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#compdef mc-update
 
 _mc-update() {
     local -a subcommands
@@ -116,4 +116,3 @@ _mc-update() {
     esac
 }
 
-compdef _mc-update mc-update

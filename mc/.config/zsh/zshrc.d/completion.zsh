@@ -1,13 +1,13 @@
 # pastikan custom completions dibaca sebelum oh-my-zsh
-fpath=(
-  $HOME/.config/zsh/completions
-  $fpath
-)
+# fpath=(
+#   $HOME/.config/zsh/completions
+#   $fpath
+# )
 # Inisialisasi completion system
 
-autoload -Uz compinit
+# autoload -Uz compinit
 # Skip security check untuk completion cache yang sudah ada
-compinit -u
+# compinit -u
 
 
 
