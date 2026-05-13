@@ -1,13 +1,13 @@
 local options = {
 	autoindent = true,
-	expandtab = false,
+	expandtab = true,
 	shiftwidth = 2,
 	tabstop = 2,
 	softtabstop = 2,
 	number = true,
 	relativenumber = true,
 	numberwidth = 4,
-	showtabline = 4,
+	showtabline = 2,
 	mouse = "a",
 	showmode = false,
 	breakindent = true,
@@ -29,7 +29,7 @@ local options = {
 	wrap = false,
 	linebreak = true,
 	termguicolors = true,
-	whichwrap = "bs<>[]hl",
+	whichwrap = "b,s,<,>,[,],h,l",
 	writebackup = false,
 }
 

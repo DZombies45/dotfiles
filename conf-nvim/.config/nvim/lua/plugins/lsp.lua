@@ -113,7 +113,7 @@ return {
       tailwindcss = {},
       jsonls = {},
       yamlls = {},
-			--lua_ls = {},
+			lua_ls = {},
     }
     local formatter = {
       'prettier', -- prettier formatter
