@@ -21,7 +21,7 @@ return {
       },
       format_on_save = {
         lsp_fallback = true,
-        async = falss,
+        async = false,
         timeout_ms = 5000,
       },
     })
@@ -37,10 +37,10 @@ return {
           typescript = 'typescript',
           typescriptreact = 'typescript',
           --     vue = "vue",
-          --     css = "css",
+          css = 'css',
           --     scss = "scss",
-          --     less = "less",
-          --     html = "html",
+          -- less = "less",
+          html = 'html',
           json = 'json',
           --     jsonc = "json",
           yaml = 'yaml',
