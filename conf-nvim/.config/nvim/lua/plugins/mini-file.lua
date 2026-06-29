@@ -13,6 +13,7 @@
 --
 return {
   "echasnovski/mini.files",
+  enabled = true,
   opts = function(_, opts)
     -- I didn't like the default mappings, so I modified them
     -- Module mappings created only inside explorer.
@@ -105,7 +106,29 @@ return {
   },
 
   config = function(_, opts)
-    -- Set up mini.files
+  -- Set up mini.files
+    local statusline = require('mini.statusline')
+    statusline.setup({ use_icons = true })
+    statusline.section_location = function()
+      return '%2l:%-2v'
+    end
     require("mini.files").setup(opts)
+    require('mini.ai').setup({ n_lines = 500 })
+    require('mini.surround').setup()
+    -- require('mini.animate').setup()
+    require('mini.cursorword').setup()
+    local hipatterns = require('mini.hipatterns')
+    hipatterns.setup({
+      highlighters = {
+        -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
+        fixme = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+        hack  = { pattern = '%f[%w]()HACK()%f[%W]',  group = 'MiniHipatternsHack'  },
+        todo  = { pattern = '%f[%w]()TODO()%f[%W]',  group = 'MiniHipatternsTodo'  },
+        note  = { pattern = '%f[%w]()NOTE()%f[%W]',  group = 'MiniHipatternsNote'  },
+
+        -- Highlight hex color strings (`#rrggbb`) using that color
+        hex_color = hipatterns.gen_highlighter.hex_color(),
+      },
+    })
   end,
 }
