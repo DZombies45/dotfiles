@@ -3,9 +3,6 @@ for f in ~/.config/shell/*.sh; do
   [ -f "$f" ] && source "$f"
 done
 
-# duit
-compdef _duit duit
-
 # load extra zsh config (completion, keybind, dll)
 for f in ~/.config/zsh/zshrc.d/*.zsh; do
   [ -f "$f" ] && source "$f"
@@ -16,4 +13,3 @@ if [ -f "$HOME/.ascii-logo.txt" ]; then
 	echo ""
 	echo -e "$(cat ~/.ascii-logo.txt)"
 fi
-
