@@ -87,7 +87,8 @@ vim.keymap.set('n', '<leader>lw', '<cmd>set wrap!<CR>', opts)
 
 -- Toggle line relative number
 opts.desc = 'Toggle Line Number Relative'
-vim.keymap.set('n', '<leader>ln', '<cmd>set relativenumber!<CR>', opts)
+vim.keymap.set('n', '<leader>nr', '<cmd>set relativenumber!<CR>', opts)
+
 -- Stay in indent mode
 opts.desc = 'Indent'
 vim.keymap.set('v', '<', '<gv', opts)
@@ -115,7 +116,7 @@ vim.keymap.set('n', '<leader>p', '"+p', opts)
 opts.desc = 'paste clipboard after cursor'
 vim.keymap.set('n', '<leader>P', '"+P', opts)
 
-
+-- toggle tab indentation
 function ToggleTabIndent()
   local expand = vim.bo.expandtab
   if expand then
@@ -123,15 +124,25 @@ function ToggleTabIndent()
     vim.bo.tabstop = 4
     vim.bo.shiftwidth = 4
     vim.bo.softtabstop = 4
-    print("Indent: [TAB]")
+    print('Indent: [TAB]')
   else
     vim.bo.expandtab = true
     vim.bo.tabstop = 2
     vim.bo.shiftwidth = 2
     vim.bo.softtabstop = 2
-    print("Indent: [SPACES]")
+    print('Indent: [SPACES]')
   end
 end
 
 opts.desc = 'toggle tab to tab or spaces'
-vim.keymap.set('n', '<leader>tt', ':lua ToggleTabIndent()<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>tt', ':lua ToggleTabIndent()<CR>', opts)
+
+-- move line to lane
+opts.desc = 'Move line down'
+vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', opts)
+opts.desc = 'Move line up'
+vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', opts)
+opts.desc = 'Move selection down'
+vim.keymap.set('v', '<A-j>', ":m '>+1<CR>gv=gv", opts)
+opts.desc = 'Move selection up'
+vim.keymap.set('v', '<A-k>', ":m '<-2<CR>gv=gv", opts)

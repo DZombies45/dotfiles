@@ -1,8 +1,9 @@
 return { -- Autocompletion
-  'hrsh7th/nvim-cmp',
+  'saghen/blink.cmp',
   event = { 'BufReadPre', 'BufNewFile' },
+  version = '1.*',
   dependencies = {
-    -- Snippet Engine & its associated nvim-cmp source
+    -- Snippet Engine
     {
       'L3MON4D3/LuaSnip',
       build = (function()
@@ -27,153 +28,69 @@ return { -- Autocompletion
         },
       },
     },
-    'saadparwaiz1/cmp_luasnip',
-
-    -- Adds other completion capabilities.
-    --  nvim-cmp does not ship with all sources by default. They are split
-    --  into multiple repos for maintenance purposes.
-    'hrsh7th/cmp-nvim-lsp',
-    'hrsh7th/cmp-buffer',
-    'hrsh7th/cmp-path',
+    -- Optional extra sources (lazydev, render-markdown register themselves
+    -- as blink sources automatically if installed; no extra cmp-* glue needed)
   },
-  config = function()
-    -- See `:help cmp`
-    local cmp = require('cmp')
-    local luasnip = require('luasnip')
-    luasnip.config.setup({})
+  --- @module 'blink.cmp'
+  --- @type blink.cmp.Config
+  opts = {
+    keymap = {
+      preset = 'none',
 
-    local kind_icons = {
-      Text = '󰉿',
-      Method = 'm',
-      Function = '󰊕',
-      Constructor = '',
-      Field = '',
-      Variable = '󰆧',
-      Class = '󰌗',
-      Interface = '',
-      Module = '',
-      Property = '',
-      Unit = '',
-      Value = '󰎠',
-      Enum = '',
-      Keyword = '󰌋',
-      Snippet = '',
-      Color = '󰏘',
-      File = '󰈙',
-      Reference = '',
-      Folder = '󰉋',
-      EnumMember = '',
-      Constant = '󰇽',
-      Struct = '',
-      Event = '',
-      Operator = '󰆕',
-      TypeParameter = '󰊄',
-    }
-    cmp.setup({
-      snippet = {
-        expand = function(args)
-          luasnip.lsp_expand(args.body)
-        end,
-      },
-      completion = { completeopt = 'menu,menuone,noinsert' },
+      ['<C-y>'] = { 'select_and_accept' },
 
-      -- For an understanding of why these mappings were
-      -- chosen, you will need to read `:help ins-completion`
-      --
-      -- No, but seriously. Please read `:help ins-completion`, it is really good!
-      mapping = cmp.mapping.preset.insert({
-        -- Select the [n]ext item
-        --['<C-n>'] = cmp.mapping.select_next_item(),
-        -- Select the [p]revious item
-        --['<C-p>'] = cmp.mapping.select_prev_item(),
+      ['<Tab>'] = { 'select_next', 'snippet_forward', 'fallback' },
+      ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
 
-        -- Scroll the documentation window [b]ack / [f]orward
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-n>'] = { 'select_next', 'fallback' },
+      ['<C-p>'] = { 'select_prev', 'fallback' },
 
-        -- Accept ([y]es) the completion.
-        --  This will auto-import if your LSP supports it.
-        --  This will expand snippets if the LSP sent a snippet.
-        ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+      ['<C-b>'] = { 'scroll_documentation_up', 'fallback' },
+      ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
+      ['<C-Space>'] = { 'show', 'show_documentation', 'hide_documentation' },
+      ['<C-e>'] = { 'hide', 'fallback' },
+    },
+  
+    appearance = {
+      -- 'mono' (default) for Nerd Font Mono or 'normal' for Nerd Font
+      -- Adjusts spacing to ensure icons are aligned
+      nerd_font_variant = 'mono',
+    },
 
-        -- If you prefer more traditional completion keymaps,
-        -- you can uncomment the following lines
-        -- ["<CR>"] = cmp.mapping.confirm({ select = true }),
-        -- ["<Tab>"] = cmp.mapping.select_next_item(),
-        -- ["<S-Tab>"] = cmp.mapping.select_prev_item(),
-
-        -- Manually trigger a completion from nvim-cmp.
-        --  Generally you don't need this, because nvim-cmp will display
-        --  completions whenever it has completion options available.
-        ['<C-Space>'] = cmp.mapping.complete({}),
-
-        -- Think of <c-l> as moving to the right of your snippet expansion.
-        --  So if you have a snippet that's like:
-        --  function $name($args)
-        --    $body
-        --  end
-        --
-        -- <c-l> will move you to the right of each of the expansion locations.
-        -- <c-h> is similar, except moving you backwards.
-        ['<C-l>'] = cmp.mapping(function()
-          if luasnip.expand_or_locally_jumpable() then
-            luasnip.expand_or_jump()
-          end
-        end, { 'i', 's' }),
-        ['<C-h>'] = cmp.mapping(function()
-          if luasnip.locally_jumpable(-1) then
-            luasnip.jump(-1)
-          end
-        end, { 'i', 's' }),
-
-        -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-        --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
-        -- Select next/previous item with Tab / Shift + Tab
-        ['<Tab>'] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_next_item()
-          elseif luasnip.expand_or_locally_jumpable() then
-            luasnip.expand_or_jump()
-          else
-            fallback()
-          end
-        end, { 'i', 's' }),
-        ['<S-Tab>'] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_prev_item()
-          elseif luasnip.locally_jumpable(-1) then
-            luasnip.jump(-1)
-          else
-            fallback()
-          end
-        end, { 'i', 's' }),
-      }),
-      sources = {
-        {
-          name = 'lazydev',
-          -- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
-          group_index = 0,
+    completion = {
+      -- Show documentation automatically
+      documentation = { auto_show = true, auto_show_delay_ms = 200 },
+      menu = {
+        draw = {
+          columns = { { 'kind_icon' }, { 'label', 'label_description', gap = 1 } },
         },
-        { name = 'nvim_lsp' },
-        { name = 'luasnip' },
-        { name = 'buffer' },
-        { name = 'path' },
-        { name = 'render-markdown' },
       },
+      accept = {
+        auto_brackets = { enabled = true },
+      },
+    },
 
-      formatting = {
-        fields = { 'kind', 'abbr', 'menu' },
-        format = function(entry, vim_item)
-          vim_item.kind = string.format('%s', kind_icons[vim_item.kind])
-          vim_item.menu = ({
-            nvim_lsp = '[LSP]',
-            luasnip = '[Snippet]',
-            buffer = '[Buffer]',
-            path = '[Path]',
-          })[entry.source.name]
-          return vim_item
-        end,
+    sources = {
+      default = { 'lsp', 'path', 'snippets', 'buffer' },
+      per_filetype = { lua = { 'lazydev', 'lsp', 'path', 'snippets', 'buffer' } },
+      providers = {
+        lazydev = { name = 'LazyDev', module = 'lazydev.integrations.blink', score_offset = 100 },
       },
-    })
-  end,
+    },
+
+    snippets = { preset = 'luasnip' },
+
+    -- Use the Rust fuzzy matcher implementation for max performance.
+    -- If prebuilt binaries don't ship for your platform (e.g. some
+    -- aarch64/Termux setups), uncomment the line below to fall back
+    -- to the pure-Lua implementation instead of failing to load.
+    fuzzy = {
+      implementation = 'prefer_rust_with_warning',
+      -- implementation = 'lua',
+    },
+
+    -- Experimental signature help support
+    signature = { enabled = true },
+  },
+  opts_extend = { 'sources.default' },
 }

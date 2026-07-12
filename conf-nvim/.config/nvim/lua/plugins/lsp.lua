@@ -7,7 +7,6 @@ return {
     'williamboman/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
     { 'j-hui/fidget.nvim', opts = {} },
-    'hrsh7th/cmp-nvim-lsp',
   },
   config = function()
     vim.api.nvim_create_autocmd('LspAttach', {
@@ -58,11 +57,10 @@ return {
       end,
     })
 
-    -- FIX 1: require lspconfig di sini supaya handler lua_ls bisa pakai variabelnya
     local lspconfig = require('lspconfig')
 
     local capabilities = vim.lsp.protocol.make_client_capabilities()
-    capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+    capabilities = vim.tbl_deep_extend('force', capabilities, require('blink.cmp').get_lsp_capabilities())
 
     local servers = {
       ts_ls = {},
@@ -71,16 +69,15 @@ return {
       tailwindcss = {},
       jsonls = {},
       yamlls = {},
-      -- FIX 2: uncomment lua_ls supaya Mason bisa install + handle via handler di bawah
-      lua_ls = {},
+      -- lua_ls = {},
     }
-
-    -- FIX 3: hapus dead code `formatter` yang tidak dipakai
 
     require('mason').setup()
 
     local ensure_installed = vim.tbl_keys(servers or {})
-    vim.list_extend(ensure_installed, {})
+    
+    vim.list_extend(ensure_installed, {'eslint_d'})
+
     require('mason-tool-installer').setup({ ensure_installed = ensure_installed })
 
     require('mason-lspconfig').setup({
@@ -90,22 +87,8 @@ return {
           server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
           lspconfig[server_name].setup(server)
         end,
-        ['lua_ls'] = function()
-          lspconfig['lua_ls'].setup({
-            capabilities = capabilities,
-            settings = {
-              Lua = {
-                diagnostics = {
-                  globals = { 'vim' },
-                },
-                completion = {
-                  callSnippet = 'Replace',
-                },
-              },
-            },
-          })
-        end,
       },
     })
   end,
 }
+
