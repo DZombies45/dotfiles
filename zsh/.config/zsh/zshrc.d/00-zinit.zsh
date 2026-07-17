@@ -57,3 +57,8 @@ zinit snippet OMZP::gitignore
 zinit ice wait lucid depth=1
 zinit light MichaelAquilina/zsh-you-should-use
 
+zinit ice wait lucid
+zinit snippet OMZP::copypath
+
+zinit ice wait lucid
+zinit snippet OMZP::ssh

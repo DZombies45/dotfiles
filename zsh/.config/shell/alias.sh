@@ -7,11 +7,12 @@ alias ls="lsd -aAF --group-dirs=first"
 alias ll="lsd -lAF --group-dirs=first --git"
 alias la="lsd -laAF --group-dirs=first --git"
 alias tree="lsd --tree"
-alias grep='rg --color=auto'
+alias rg='rg --color=auto'
 alias diff='diff --color=auto'
 alias df='df -h'
 alias mkdir='mkdir -p'
 alias copy='termux-clipboard-set'
+alias fshare='copyparty -c .config/copyparty/copyparty.conf'
 
 # shortcut
 alias vim="nvim"
