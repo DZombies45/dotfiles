@@ -1,0 +1,4 @@
+https://jaylydev.github.io/scriptapi-docs/latest/modules/_minecraft_server-ui-1.html
+https://jaylydev.github.io/scriptapi-docs/latest/modules/_minecraft_server-ui.html
+https://jaylydev.github.io/scriptapi-docs/latest/modules/_minecraft_server-1.html
+https://jaylydev.github.io/scriptapi-docs/latest/modules/_minecraft_server.html

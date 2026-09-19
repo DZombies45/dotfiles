@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://jaylydev.github.io/scriptapi-docs/latest/modules/_minecraft_server-ui-1.html",
+    "commands": [
+      "npm i @minecraft/server-ui@2.2.0-beta.1.26.40-stable"
+    ]
+  },
+  {
+    "url": "https://jaylydev.github.io/scriptapi-docs/latest/modules/_minecraft_server-ui.html",
+    "commands": [
+      "npm i @minecraft/server-ui@2.1.0"
+    ]
+  },
+  {
+    "url": "https://jaylydev.github.io/scriptapi-docs/latest/modules/_minecraft_server-1.html",
+    "commands": [
+      "npm i @minecraft/server@2.10.0-beta.1.26.40-stable"
+    ]
+  },
+  {
+    "url": "https://jaylydev.github.io/scriptapi-docs/latest/modules/_minecraft_server.html",
+    "commands": [
+      "npm i @minecraft/server@2.9.0"
+    ]
+  }
+]

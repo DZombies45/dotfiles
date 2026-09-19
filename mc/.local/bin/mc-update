@@ -16,11 +16,13 @@ cmd="${1:-}"
 green() { echo -e "\033[32m$*\033[0m"; }
 yellow() { echo -e "\033[33m$*\033[0m"; }
 red() { echo -e "\033[31m$*\033[0m"; }
+bar() { echo -e "\033[30m$*\033[0m"; }
 
 # ===============================
 # Helper: npm install dengan fallback
 # ===============================
 npm_install_safe() {
+  bar "+===============================+"
   pkgs=("$@")
   if [ ${#pkgs[@]} -eq 0 ]; then
     red "❌ Tidak ada paket untuk diinstal."
