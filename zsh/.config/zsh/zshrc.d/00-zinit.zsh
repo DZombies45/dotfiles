@@ -37,7 +37,7 @@ zinit light zsh-users/zsh-completions
 zinit ice wait lucid depth=1
 zinit light Aloxaf/fzf-tab
 
-# vi-mode
+# gh/github
 zinit ice wait lucid
 zinit snippet OMZP::gh
 
@@ -58,7 +58,7 @@ zinit ice wait lucid depth=1
 zinit light MichaelAquilina/zsh-you-should-use
 
 zinit ice wait lucid
-zinit snippet OMZP::copypath
+zinit snippet OMZP::ssh
 
 zinit ice wait lucid
-zinit snippet OMZP::ssh
+zinit snippet OMZP::npm
