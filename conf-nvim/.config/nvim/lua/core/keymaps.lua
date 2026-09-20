@@ -117,7 +117,7 @@ opts.desc = 'paste clipboard after cursor'
 vim.keymap.set('n', '<leader>P', '"+P', opts)
 
 -- toggle tab indentation
-function ToggleTabIndent()
+local function toggle_tab_indent()
   local expand = vim.bo.expandtab
   if expand then
     vim.bo.expandtab = false
@@ -135,7 +135,7 @@ function ToggleTabIndent()
 end
 
 opts.desc = 'toggle tab to tab or spaces'
-vim.keymap.set('n', '<leader>tt', ':lua ToggleTabIndent()<CR>', opts)
+vim.keymap.set('n', '<leader>tt', toggle_tab_indent, opts)
 
 -- move line to lane
 opts.desc = 'Move line down'

@@ -49,10 +49,10 @@ vim.g.clipboard = {
   },
   paste = {
     ['+'] = function()
-      return vim.fn.systemlist('termux-clipboard-get')[1] or ''
+      return vim.split(vim.fn.system('termux-clipboard-get'), '\n', { plain = true, trimempty = true })
     end,
     ['*'] = function()
-      return vim.fn.systemlist('termux-clipboard-get')[1] or ''
+      return vim.split(vim.fn.system('termux-clipboard-get'), '\n', { plain = true, trimempty = true })
     end,
   },
   cache_enabled = 0,
