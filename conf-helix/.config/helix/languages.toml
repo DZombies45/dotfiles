@@ -1,0 +1,37 @@
+# --- Language server tambahan: snippet kustom ---
+[language-server.hx-lsp]
+command = "hx-lsp"
+
+# --- JavaScript / TypeScript ---
+[[language]]
+name = "javascript"
+auto-format = true
+indent = { tab-width = 2, unit = "  " }
+formatter = { command = "prettier", args = ["--parser", "babel"] }
+language-servers = ["typescript-language-server", "hx-lsp"]
+
+[[language]]
+name = "typescript"
+auto-format = true
+indent = { tab-width = 2, unit = "  " }
+formatter = { command = "prettier", args = ["--parser", "typescript"] }
+language-servers = ["typescript-language-server", "hx-lsp"]
+
+# --- JSON ---
+[[language]]
+name = "json"
+auto-format = true
+indent = { tab-width = 2, unit = "  " }
+formatter = { command = "prettier", args = ["--parser", "json"] }
+language-servers = ["hx-lsp"]
+
+# --- PHP (Laravel) ---
+[[language]]
+name = "php"
+auto-format = false
+indent = { tab-width = 4, unit = "    " }
+
+# --- Lua ---
+[[language]]
+name = "lua"
+indent = { tab-width = 2, unit = "  " }
