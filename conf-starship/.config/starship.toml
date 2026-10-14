@@ -63,6 +63,9 @@ format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)'
 symbol = ""
 style = "bg:#212736"
 format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
+detect_files = ["package.json"]
+detect_folders = []
+detect_extensions = []
 
 [rust]
 symbol = ""
